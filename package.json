@@ -15,5 +15,13 @@
   "bugs": {
     "url": "https://github.com/BigSillyTiger/TigerCave_Backend/issues"
   },
-  "homepage": "https://github.com/BigSillyTiger/TigerCave_Backend#readme"
+  "homepage": "https://github.com/BigSillyTiger/TigerCave_Backend#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "mongodb": "^4.4.0",
+    "mongoose": "^6.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
 }
