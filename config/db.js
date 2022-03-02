@@ -8,7 +8,7 @@ const mongoOptions = {
     dbName: process.env.dbName
 }
 
-const authSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     username: String,
     hash: String,
     salt: String
@@ -17,4 +17,6 @@ const authSchema = new mongoose.Schema({
 const dbConnection = mongoose.createConnection(mongoUrl, mongoOptions)
 
 // 1st para is collection name
-const UserAuth = dbConnection.model('auth', authSchema)
+const User = dbConnection.model('User', userSchema)
+
+module.exports = dbConnection
