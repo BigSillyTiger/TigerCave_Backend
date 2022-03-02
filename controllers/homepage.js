@@ -3,6 +3,8 @@ const homePage = () => {
         <h1>Home page</h1>
         <p>Please 
             <a href="/register">Register</a>
+            or
+            <a href="/login">Login</a>
         </p>
     `
 }
@@ -14,7 +16,7 @@ const loginPage = () => {
             Enter Username: <br>
             <input type="text" name="username"><br>
             Enter Password: <br>
-            <input type="password" name="password">
+            <input type="password" name="password" required>
             <br><br>
             <input type="submit" value="Submit">
         </form>
@@ -28,7 +30,7 @@ const registerPage = () => {
             Enter Username: <br>
             <input type="text" name="username"><br>
             Enter Password: <br>
-            <input type="password" name="password">
+            <input type="password" name="password" required>
             <br><br>
             <input type="submit" value="Submit">
         </form>

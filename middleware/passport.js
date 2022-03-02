@@ -1,36 +1,27 @@
 const passport = require("passport")
 const LocalStrategy = require("passport-local").Strategy
-const dbConnection = require("../config/db")
+const { User } = require("../config/db")
 const { varifyPassword } = require("../utils/password")
 
-const Users = dbConnection.model.User
-
-const customFields = {
-    usernameField: 'uname',
-    passwordField: 'pw'
-}
-
-const varifyCB = (username, password, cb) => {
-    console.log('===> server varify cb: ', username, password)
-    Users.findOne({username: username})
+const varifyCB = (username, password, done) => {
+    User.findOne({username: username})
         .then(user => {
-
             if(!user) {
-                return cb(null, false)
+                return done(null, false)
             } 
             const isValid = varifyPassword(password, user.hash, user.salt)
             if(isValid) {
-                return cb(null, user)
+                return done(null, user)
             } else {
-                return cb(null, false)
+                return done(null, false)
             }
         })
         .catch(err => {
-            cb(err)
+            done(err)
         })
 }
 
-const strategy = new LocalStrategy(customFields, varifyCB)
+const strategy = new LocalStrategy(varifyCB)
 
 passport.use(strategy)
 
@@ -39,11 +30,9 @@ passport.serializeUser((user, done) => {
 })
 
 passport.deserializeUser((userID, done) => {
-    Users.findById(userID)
+    User.findById(userID)
         .then(user => {
             done(null, user)
         })
         .catch(err => done(err))
 })
-
-//module.exports = passport
