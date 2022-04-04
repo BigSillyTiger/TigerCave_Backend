@@ -5,6 +5,7 @@ const MongoStore = require('connect-mongo')
 const routers = require('./routes')
 const passport = require('passport')
 const strategy = require('./middleware/passport')
+const log = require('./config/logs')
 
 require('dotenv').config()
 
@@ -37,8 +38,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use((req, res, next) => {
-    //console.log('==> server req.sessions: ', req.session)   
-    //console.log('==> server req: ', req)   
+    console.log('==> server req.sessions: ', req.session)   
+    console.log('==> server req: ', req.user)   
+    
     next()
 })
 

@@ -47,7 +47,7 @@ const protectedRouter = (flag) => {
         `
     }
     return `
-        <h1>You are not authenticated</h1>
+        <h1>You are not authenticated / admin</h1>
         <p>
             <a href="/login">Login</a>
         </p>

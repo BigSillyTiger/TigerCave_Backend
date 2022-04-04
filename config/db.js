@@ -7,7 +7,8 @@ const mongoUrl = process.env.DB_STRING
 const userSchema = new mongoose.Schema({
     username: String,
     hash: String,
-    salt: String
+    salt: String,
+    admin: Boolean
 })
 
 const dbConnection = mongoose.createConnection(mongoUrl, {

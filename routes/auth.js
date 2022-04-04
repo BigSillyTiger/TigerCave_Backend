@@ -3,10 +3,11 @@ const passport = require("passport")
 const pwUtils = require("../utils/password")
 const {User} = require("../config/db")
 const { controller } = require("../controllers")
+const isAuth = require('./authMiddle').isAuth
+const isAdmin = require('./authMiddle').isAdmin
 
 
 //
-
 router.post('/login', passport.authenticate('local', {
     failureRedirect: '/login-failure', 
     successRedirect: '/login-success'
@@ -14,13 +15,12 @@ router.post('/login', passport.authenticate('local', {
 
 router.post('/register', (req, res, next) => {
     const saltHash = pwUtils.genPassword(req.body.password)
-    const salt = saltHash.salt
-    const hash = saltHash.hash
 
     const newUser = new User({
         username: req.body.username,
         hash: saltHash.hash,
-        salt: saltHash.salt
+        salt: saltHash.salt,
+        admin: true
     })
 
     newUser.save()
@@ -44,12 +44,8 @@ router.get('/register', (req, res, next) => {
     res.send(controller.registerPage())
 })
 
-router.get('/protected-router', (req, res, next) => {
-    if(req.isAuthenticated()) {
-        res.send(controller.protectedRouter(true))
-    } else {
-        res.send(controller.protectedRouter(false))
-    }
+router.get('/protected-router', [isAuth, isAdmin], (req, res, next) => {
+    res.send(controller.protectedRouter(true))
 })
 
 router.get('/logout',(req, res, next) => {
