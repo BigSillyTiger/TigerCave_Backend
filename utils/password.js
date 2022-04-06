@@ -1,4 +1,5 @@
 const crypto = require("crypto")
+const log = require('../config/logs')
 
 const genPassword = (pw) => {
     let salt = crypto.randomBytes(32).toString('hex')

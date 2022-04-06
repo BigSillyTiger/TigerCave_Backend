@@ -1,20 +1,34 @@
 const router = require("express").Router()
-const passport = require("passport")
-const pwUtils = require("../utils/password")
+const utils = require("../utils")
+const authMW = require("../middleware").auth
 const {User} = require("../config/db")
 const { controller } = require("../controllers")
-const isAuth = require('./authMiddle').isAuth
-const isAdmin = require('./authMiddle').isAdmin
+const {isAuth, isAdmin} = require('./authMiddle')
+const logs = require('../config/logs')
 
+router.post('/login', (req, res, next) => {
+    User.findOne({username: req.body.username})
+        .then(user => {
+            if(!user) {
+                res.status(401).json({success: true, msg: 'Could not find the user.'})
+            }
+            const isValid = utils.pw.varifyPassword(req.body.password, user.hash, user.salt)
+            if(isValid) {
+                const tokenObj = utils.jwt.issueJWT(user)
+                res.status(200).json({success: true, token: tokenObj.token, expiresIn: tokenObj.expires})
+            } else {
+                res.status(401).json({success: false, msg: 'You entered wrong loggin info.'})
+            }
+        })
+        .catch(err => {
+            logs.errLog(err)
+            next(err)
+        })
 
-//
-router.post('/login', passport.authenticate('local', {
-    failureRedirect: '/login-failure', 
-    successRedirect: '/login-success'
-}))
+})
 
 router.post('/register', (req, res, next) => {
-    const saltHash = pwUtils.genPassword(req.body.password)
+    const saltHash = utils.pw.genPassword(req.body.password)
 
     const newUser = new User({
         username: req.body.username,
@@ -25,11 +39,18 @@ router.post('/register', (req, res, next) => {
 
     newUser.save()
         .then(user => {
-            console.log('--> db saved new user: ', user)
+            logs.infoLog('--> db saved new user: ', user)
+            const jwt = utils.jwt.issueJWT(user)
+            res.json({
+                success: true,
+                user,
+                token: jwt.token,
+                expiresIn: jwt.expires
+            })
         })
         .catch(err => console.log('--> db save new user error: ', err)) 
 
-    res.redirect('/login')
+    //res.redirect('/login')
 })
 
 router.get('/', (req, res, next) => {
@@ -44,7 +65,11 @@ router.get('/register', (req, res, next) => {
     res.send(controller.registerPage())
 })
 
-router.get('/protected-router', [isAuth, isAdmin], (req, res, next) => {
+/* router.get('/protected-router', [isAuth, isAdmin], (req, res, next) => {
+    res.send(controller.protectedRouter(true))
+}) */
+
+router.get('/protected-router', authMW.authMiddleware, (req, res, next) => {
     res.send(controller.protectedRouter(true))
 })
 
