@@ -1,15 +1,17 @@
 const path = require('path')
 const express = require("express")
 const session = require('express-session')
+var cors = require('cors')
 const MongoStore = require('connect-mongo')
 const routers = require('./routes')
-const passport = require('passport')
-const strategy = require('./middleware/passport')
+
+const log = require('./config/logs')
 
 require('dotenv').config()
 
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
@@ -30,18 +32,14 @@ app.use(session({
     }
 }))
 
-// passport setup
-require("./middleware/passport")
-
-app.use(passport.initialize())
-app.use(passport.session())
 
 app.use((req, res, next) => {
     //console.log('==> server req.sessions: ', req.session)   
-    //console.log('==> server req: ', req)   
+    //console.log('==> server req: ', req.user)   
+    
     next()
 })
 
 app.use(routers.auth)
 
-app.listen(3000)
+app.listen(8000)
