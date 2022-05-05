@@ -5,17 +5,15 @@ const {User} = require("../config/db")
 const { controller } = require("../controllers")
 const {isAuth, isAdmin} = require('./authMiddle')
 const logs = require('../config/logs')
-const pw = require('../utils').pw
 
 router.post('/login', (req, res, next) => {
     logs.infoLog('receive request login')
-    console.log("---> ", req.body, pw)
+    console.log("---> ", req.body)
     User.findOne({username: req.body.username})
         .then(user => {
             if(!user) {
                 res.status(401).json({success: true, msg: 'Could not find the user.'})
             }
-
             const isValid = utils.pw.verifyPassword(req.body.password, user.hash, user.salt)
             if(isValid) {
                 const tokenObj = utils.jwt.issueJWT(user)
