@@ -6,8 +6,28 @@ const { controller } = require("../controllers")
 const {isAuth, isAdmin} = require('./authMiddle')
 const logs = require('../config/logs')
 
+router.post('/adminlogin', (req, res, next) => {
+    logs.infoLog('receive admin login req')
+    User.findOne({username: req.body.username})
+        .then(user => {
+            if(!user) {
+                res.status(401).json({success: true, msg: 'Could not find the user.'})
+            }
+            const isValid = utils.pw.verifyPassword(req.body.password, user.hash, user.salt)
+            if(isValid) {
+                const tokenObj = utils.jwt.issueJWT(user)
+                res.status(200).json({success: true, token: tokenObj.token, expiresIn: tokenObj.expires})
+            } else {
+                res.status(401).json({success: false, msg: 'You entered wrong loggin info.'})
+            }
+        })
+        .catch(err => {
+            logs.errLog(err)
+            next(err)
+        })
+})
+
 router.post('/login', (req, res, next) => {
-    logs.infoLog('receive request login')
     console.log("---> ", req.body)
     User.findOne({username: req.body.username})
         .then(user => {
@@ -26,7 +46,6 @@ router.post('/login', (req, res, next) => {
             logs.errLog(err)
             next(err)
         })
-
 })
 
 router.post('/register', (req, res, next) => {
