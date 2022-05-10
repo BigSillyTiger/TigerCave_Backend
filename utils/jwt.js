@@ -8,7 +8,7 @@ const PRIV_KEY = fs.readFileSync(privToken, 'utf8')
 
 const issueJWT = (user) => {
     const _id = user._id
-    const expiresIn = '1w'
+    const expiresIn = 1000 * 60 * 60 * 24
     const payload = {
         sub: _id,
         iat: Date.now()

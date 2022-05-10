@@ -1,44 +1,37 @@
 const path = require('path')
 const express = require("express")
-const session = require('express-session')
+//const session = require('express-session')
+const cookieParser = require('cookie-parser')
 var cors = require('cors')
-const MongoStore = require('connect-mongo')
+//const MongoStore = require('connect-mongo')
 const routers = require('./routes')
 
-const log = require('./config/logs')
+//const log = require('./config/logs')
 
 require('dotenv').config()
 
-
 const app = express()
-app.use(cors())
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 // sessions setup
-const sessionStore = MongoStore.create({
+/* const sessionStore = MongoStore.create({
     mongoUrl: process.env.DB_STRING,
     //dbName: process.env.DB_NAME,
     collectionName: process.env.DB_SESSIONS_COLLECTION
-})
+}) */
 
-app.use(session({
+/* app.use(session({
     secret: process.env.DB_SECRET,
     resave: false,
     saveUninitialized: true,
     store: sessionStore,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 // 2 days
+        maxAge: 1000 * 60 * 60 * 24 * 3 // 2 days
     }
-}))
-
-
-app.use((req, res, next) => {
-    //console.log('==> server req.sessions: ', req.session)   
-    //console.log('==> server req: ', req.user)   
-    
-    next()
-})
+})) */
 
 app.use(routers.auth)
 

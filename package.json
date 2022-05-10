@@ -20,6 +20,7 @@
   "dependencies": {
     "base64url": "^3.0.1",
     "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.0",

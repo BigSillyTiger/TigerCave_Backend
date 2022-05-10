@@ -8,6 +8,7 @@ const logs = require('../config/logs')
 
 router.post('/adminlogin', (req, res, next) => {
     logs.infoLog('receive admin login req')
+    console.log('-> cookies: ', req.cookies)
     User.findOne({username: req.body.username})
         .then(user => {
             if(!user) {
@@ -16,7 +17,11 @@ router.post('/adminlogin', (req, res, next) => {
             const isValid = utils.pw.verifyPassword(req.body.password, user.hash, user.salt)
             if(isValid) {
                 const tokenObj = utils.jwt.issueJWT(user)
-                res.status(200).json({success: true, token: tokenObj.token, expiresIn: tokenObj.expires})
+                res.cookie('login', tokenObj.token, {
+                    maxAge: tokenObj.expires, 
+                    httpOnly: true,
+                })
+                res.status(200).json({success: true})
             } else {
                 res.status(401).json({success: false, msg: 'You entered wrong loggin info.'})
             }
@@ -26,6 +31,17 @@ router.post('/adminlogin', (req, res, next) => {
             next(err)
         })
 })
+
+router.get('/checkAuth', authMW.authMiddleware, (req, res, next) => {
+    //res.send(controller.protectedRouter(true))
+    res.status(200).json({success: true})
+})
+
+router.get('/adminlogout', (req, res, next) => {
+    res.clearCookie('login')
+    res.status(200).json({note: 'successfully logout'})
+})
+
 
 router.post('/login', (req, res, next) => {
     console.log("---> ", req.body)
