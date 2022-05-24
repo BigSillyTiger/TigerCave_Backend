@@ -1,3 +1,4 @@
 module.exports = {
-    controller: require("./homepage")
-}
+    controller: require("./homepage"),
+    post: require("./posts"),
+};

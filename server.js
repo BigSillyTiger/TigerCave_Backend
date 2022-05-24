@@ -1,20 +1,21 @@
-const path = require('path')
-const express = require("express")
+const path = require("path");
+const express = require("express");
 //const session = require('express-session')
-const cookieParser = require('cookie-parser')
-var cors = require('cors')
+const cookieParser = require("cookie-parser");
+var cors = require("cors");
 //const MongoStore = require('connect-mongo')
-const routers = require('./routes')
+const routers = require("./routes");
 
 //const log = require('./config/logs')
 
-require('dotenv').config()
+require("dotenv").config();
 
-const app = express()
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
-app.use(cookieParser())
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+const app = express();
+//app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+app.use(cors({ credentials: true, origin: true }));
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // sessions setup
 /* const sessionStore = MongoStore.create({
@@ -33,6 +34,7 @@ app.use(express.urlencoded({extended: true}))
     }
 })) */
 
-app.use(routers.auth)
+app.use(routers.auth);
+app.use(routers.post);
 
-app.listen(8000)
+app.listen(8000);
