@@ -1,14 +1,12 @@
 const router = require("express").Router();
 const utils = require("../utils");
-const authMW = require("../middleware").auth;
+const { authMW } = require("../middleware").auth;
 const { User } = require("../config/db");
 const { controller } = require("../controllers");
-const { isAuth, isAdmin } = require("./authMiddle");
 const logs = require("../config/logs");
 
 router.post("/adminlogin", (req, res, next) => {
     logs.infoLog("receive admin login req");
-    console.log("-> cookies: ", req.cookies);
     User.findOne({ username: req.body.username })
         .then((user) => {
             if (!user) {
@@ -42,7 +40,7 @@ router.post("/adminlogin", (req, res, next) => {
         });
 });
 
-router.get("/checkAuth", authMW.authMiddleware, (req, res, next) => {
+router.get("/checkAuth", authMW, (req, res, next) => {
     //res.send(controller.protectedRouter(true))
     res.status(200).json({ success: true });
 });
@@ -126,11 +124,7 @@ router.get("/register", (req, res, next) => {
     res.send(controller.registerPage());
 });
 
-/* router.get('/protected-router', [isAuth, isAdmin], (req, res, next) => {
-    res.send(controller.protectedRouter(true))
-}) */
-
-router.get("/protected-router", authMW.authMiddleware, (req, res, next) => {
+router.get("/protected-router", authMW, (req, res, next) => {
     res.send(controller.protectedRouter(true));
 });
 

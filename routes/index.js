@@ -1,4 +1,4 @@
 module.exports = {
-    auth: require("./auth"),
-    post: require("./postcontent"),
+    auth: require("./authAPIs"),
+    post: require("./roarAPIs"),
 };

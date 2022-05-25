@@ -11,9 +11,10 @@ const userSchema = new mongoose.Schema({
     admin: Boolean,
 });
 
-const shortPostSchema = new mongoose.Schema({
-    time: Date,
+const roarSchema = new mongoose.Schema({
+    date: Date,
     content: String,
+    archive: Boolean,
 });
 
 const dbConnection = mongoose.createConnection(mongoUrl, {
@@ -23,10 +24,10 @@ const dbConnection = mongoose.createConnection(mongoUrl, {
 
 // 1st para is collection name
 const User = dbConnection.model("User", userSchema);
-const SPost = dbConnection.model("Post", shortPostSchema);
+const Roar = dbConnection.model("Roar", roarSchema);
 
 module.exports = {
     dbConnection,
     User,
-    SPost,
+    Roar,
 };
