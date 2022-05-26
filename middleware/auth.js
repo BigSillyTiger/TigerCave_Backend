@@ -7,7 +7,7 @@ const pubToken = path.join(__dirname, "../utils/keys", "public_key.pem");
 const PUB_KEY = fs.readFileSync(pubToken, "utf8");
 
 const authMW = (req, res, next) => {
-    console.log("authMiddleware in be");
+    //console.log("authMiddleware in be");
     if ("login" in req.cookies) {
         const tokenParts = req.cookies.login.split(" ");
 

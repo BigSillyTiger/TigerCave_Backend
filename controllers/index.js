@@ -1,4 +1,4 @@
 module.exports = {
-    controller: require("./homepage"),
-    roarController: require("./roarsPosts"),
+    homeController: require("./homepage"),
+    roarsController: require("./roarsController"),
 };
