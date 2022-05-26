@@ -6,9 +6,9 @@ const { controller } = require("../controllers");
 const logs = require("../config/logs");
 
 const API_REQ_ROAR = "/roars";
+const API_REQ_ROAR_ADMIN = "/admin/roars";
 
 router.post(API_REQ_ROAR, (req, res, next) => {
-    console.log("content: ", req.body.data);
     const newRoar = new Roar({
         date: Date.now(),
         content: req.body.data,
@@ -27,15 +27,45 @@ router.post(API_REQ_ROAR, (req, res, next) => {
 });
 
 router.put(API_REQ_ROAR, [authMW, adminMW], (req, res) => {
-    console.log("------> be recv put roar req: ", req.body.data);
-    Roar.findByIdAndUpdate(req.body.data, { archive: true }).then((post) => {
-        console.log("--> put req found id item: ", post);
-    });
-    res.status(200).json({ hidetest: true });
+    Roar.findByIdAndUpdate(req.body.data, { archive: true })
+        .then((post) => {
+            res.status(200).json({ archived: true });
+        })
+        .catch((err) => {
+            res.status(401).json({ archived: false, msg: "err occured" });
+        });
 });
 
 router.get(API_REQ_ROAR, (req, res) => {
     Roar.find({ archive: false })
+        .sort([["date", "descending"]])
+        .then((post) => {
+            if (!post) {
+                res.status(401).json({
+                    success: true,
+                    content_num: 0,
+                    msg: "Could not find content",
+                });
+            }
+            console.log("------> server post: ", post);
+            res.status(200).json({
+                success: true,
+                content_num: post.length,
+                content: JSON.stringify(post),
+            });
+        })
+        .catch((err) => {
+            logs.errLog(err);
+            res.status(401).json({
+                success: true,
+                content_num: 0,
+                msg: "Could not find content",
+            });
+        });
+});
+
+router.get(API_REQ_ROAR_ADMIN, (req, res) => {
+    Roar.find({ archive: true })
         .sort([["date", "descending"]])
         .then((post) => {
             if (!post) {
