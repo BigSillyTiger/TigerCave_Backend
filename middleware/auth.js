@@ -2,13 +2,13 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const logs = require("../config/logs");
+const { LOGIN_COOKIES } = require("../config/presets");
 
 const pubToken = path.join(__dirname, "../utils/keys", "public_key.pem");
 const PUB_KEY = fs.readFileSync(pubToken, "utf8");
 
 const authMW = (req, res, next) => {
-    //console.log("authMiddleware in be");
-    if ("login" in req.cookies) {
+    if (LOGIN_COOKIES in req.cookies) {
         const tokenParts = req.cookies.login.split(" ");
 
         if (
@@ -16,7 +16,7 @@ const authMW = (req, res, next) => {
             tokenParts[1].match(/\S+\.\S+\.\S+/) !== null
         ) {
             try {
-                req.jwt = jwt.verify(tokenParts[1], PUB_KEY, {
+                jwt.verify(tokenParts[1], PUB_KEY, {
                     algorithms: ["RS256"],
                 });
                 next();
@@ -38,7 +38,6 @@ const authMW = (req, res, next) => {
 };
 
 const adminMW = (req, res, next) => {
-    console.log("---> be admin mw, for now this is an empty mw ");
     if (1) {
         next();
     } else {

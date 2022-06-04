@@ -1,12 +1,13 @@
-const { Roar } = require("../config/db");
+const Roar = require("../database/models/roar");
 
 const getRoars = (option) => {
     return Roar.find(option).sort([["date", "descending"]]);
 };
 
 const addRoar = (content) => {
-    const newRoar = new Roar({ ...content });
-    return newRoar.save();
+    //const newRoar = new Roar({ ...content });
+    //return newRoar.save();
+    return Roar.create({ ...content });
 };
 
 const updateRoar = (roarID, option) => {

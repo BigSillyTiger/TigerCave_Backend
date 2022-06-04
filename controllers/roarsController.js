@@ -1,17 +1,27 @@
-const Services = require("../services");
+const Services = require("../services/roarsServices");
+const { v4: uuidv4 } = require("uuid");
+
+const testAPI = (req, res) => {
+    console.log("=> test api: ", req.body);
+    console.log("=> test files: ", req.files);
+    res.status(200).json({ roar_test: true });
+};
 
 /* 
     add a new roar
  */
 const addRoar = (req, res) => {
     const option = {
+        pairedId: uuidv4(),
         date: Date.now(),
-        content: req.body.data,
+        content: req.body.data.content,
         archive: false,
+        pics: req.body.data.pics,
     };
 
-    Services.roarsService
-        .addRoar(option)
+    console.log("==> be add new roar: ", option);
+
+    Services.addRoar(option)
         .then((result) => {
             //console.log("--> controller save new post: ", post);
             res.status(200).json({ roar_save: true });
@@ -32,8 +42,7 @@ const archiveRoar = (req, res) => {
         archive: req.body.data.archiveFlag,
     };
 
-    Services.roarsService
-        .updateRoar(roarID, option)
+    Services.updateRoar(roarID, option)
         .then((result) => {
             //console.log("--> controller save new post: ", post);
             res.status(200).json({ archived: true });
@@ -62,8 +71,7 @@ const getRoars = (req, res, config) => {
             option.archive = false;
             break;
     }
-    Services.roarsService
-        .getRoars(option)
+    Services.getRoars(option)
         .then((post) => {
             if (!post) {
                 res.status(401).json({
@@ -91,8 +99,7 @@ const getRoars = (req, res, config) => {
 
 const deleteRoar = (req, res) => {
     const id = req.params["id"];
-    Services.roarsService
-        .deleteRoar(id)
+    Services.deleteRoar(id)
         .then((result) => {
             console.log("-> succeed: ", result);
             res.status(200).json({ result: "delete successed" });
@@ -107,4 +114,5 @@ module.exports = {
     archiveRoar,
     getRoars,
     deleteRoar,
+    testAPI,
 };

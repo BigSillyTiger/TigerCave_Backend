@@ -1,43 +1,14 @@
 const router = require("express").Router();
 const utils = require("../utils");
 const { authMW } = require("../middleware").auth;
-const { User } = require("../config/db");
-const { controller } = require("../controllers");
+const { User } = require("../database/models/user");
+const homeController = require("../controllers/homepage");
+const authController = require("../controllers/authController");
 const logs = require("../config/logs");
 
 router.post("/adminlogin", (req, res, next) => {
     logs.infoLog("receive admin login req");
-    User.findOne({ username: req.body.username })
-        .then((user) => {
-            if (!user) {
-                res.status(401).json({
-                    success: true,
-                    msg: "Could not find the user.",
-                });
-            }
-            const isValid = utils.pw.verifyPassword(
-                req.body.password,
-                user.hash,
-                user.salt
-            );
-            if (isValid) {
-                const tokenObj = utils.jwt.issueJWT(user);
-                res.cookie("login", tokenObj.token, {
-                    maxAge: tokenObj.expires,
-                    httpOnly: true,
-                });
-                res.status(200).json({ success: true });
-            } else {
-                res.status(401).json({
-                    success: false,
-                    msg: "You entered wrong loggin info.",
-                });
-            }
-        })
-        .catch((err) => {
-            logs.errLog(err);
-            next(err);
-        });
+    authController.login(req, res);
 });
 
 router.get("/checkAuth", authMW, (req, res, next) => {
@@ -46,11 +17,10 @@ router.get("/checkAuth", authMW, (req, res, next) => {
 });
 
 router.get("/adminlogout", (req, res, next) => {
-    res.clearCookie("login");
-    res.status(200).json({ note: "successfully logout" });
+    authController.logout(req, res);
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/api/login", (req, res, next) => {
     console.log("---> ", req.body);
     User.findOne({ username: req.body.username })
         .then((user) => {
@@ -85,7 +55,7 @@ router.post("/login", (req, res, next) => {
         });
 });
 
-router.post("/register", (req, res, next) => {
+router.post("/api/register", (req, res, next) => {
     const saltHash = utils.pw.genPassword(req.body.password);
 
     const newUser = new User({
@@ -113,19 +83,19 @@ router.post("/register", (req, res, next) => {
 });
 
 router.get("/", (req, res, next) => {
-    res.send(controller.homePage());
+    res.send(homeController.homePage());
 });
 
-router.get("/login", (req, res, next) => {
-    res.send(controller.loginPage());
+router.get("/api/login", (req, res, next) => {
+    res.send(homeController.loginPage());
 });
 
-router.get("/register", (req, res, next) => {
-    res.send(controller.registerPage());
+router.get("/api/register", (req, res, next) => {
+    res.send(homeController.registerPage());
 });
 
 router.get("/protected-router", authMW, (req, res, next) => {
-    res.send(controller.protectedRouter(true));
+    res.send(homeController.protectedRouter(true));
 });
 
 router.get("/logout", (req, res, next) => {
@@ -134,11 +104,11 @@ router.get("/logout", (req, res, next) => {
 });
 
 router.get("/login-success", (req, res, next) => {
-    res.send(controller.loginS());
+    res.send(homeController.loginS());
 });
 
 router.get("/login-failure", (req, res, next) => {
-    res.send(controller.loginF());
+    res.send(homeController.loginF());
 });
 
 module.exports = router;

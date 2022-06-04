@@ -1,40 +1,36 @@
 const path = require("path");
 const express = require("express");
+const mongoose = require("mongoose");
 //const session = require('express-session')
 const cookieParser = require("cookie-parser");
+const fileUpload = require("express-fileupload");
 var cors = require("cors");
 //const MongoStore = require('connect-mongo')
-const routers = require("./routes");
-
-//const log = require('./config/logs')
+const log = require("./config/logs");
+const { connectDB } = require("./database/db");
 
 require("dotenv").config();
 
 const app = express();
-//app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+
+connectDB();
+
 app.use(cors({ credentials: true, origin: true }));
 app.use(cookieParser());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// sessions setup
-/* const sessionStore = MongoStore.create({
-    mongoUrl: process.env.DB_STRING,
-    //dbName: process.env.DB_NAME,
-    collectionName: process.env.DB_SESSIONS_COLLECTION
-}) */
+app.use(require("./routes/auth"));
+app.use(require("./routes/roar"));
 
-/* app.use(session({
-    secret: process.env.DB_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    store: sessionStore,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 3 // 2 days
-    }
-})) */
+mongoose.connection.once("open", () => {
+    log.infoLog("connected to the DB");
+    app.listen(8000, () => {
+        log.infoLog("server runs on 8000");
+    });
+});
 
-app.use(routers.auth);
-app.use(routers.post);
-
-app.listen(8000);
+/* app.listen(8000, () => {
+    log.infoLog("server runs on 8000");
+}); */
