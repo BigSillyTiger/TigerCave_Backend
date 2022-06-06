@@ -1,17 +1,10 @@
 const router = require("express").Router();
 const { authMW, adminMW } = require("../middleware").auth;
 const roarsController = require("../controllers/roarsController");
-const { uploadMW } = require("../middleware").multer;
-const logs = require("../config/logs");
+const upload = require("../middleware").multer;
 
 const API_REQ_ROAR = "/roars";
 const API_REQ_ROAR_ADMIN = "/admin/roars";
-const API_REQ_UPLOAD = "/admin/upload";
-
-router.post(API_REQ_UPLOAD, uploadMW.single("testImg"), (req, res) => {
-    console.log("===> be test API");
-    roarsController.testAPI(req, res);
-});
 
 /* add a new roar */
 router.post(API_REQ_ROAR, [authMW, adminMW], (req, res) => {

@@ -53,7 +53,7 @@ const connectDB = async () => {
             useNewUrlParser: true,
         });
     } catch (error) {
-        console.log("=> err: ", error);
+        console.log("=> connect to db err: ", error);
     }
 };
 

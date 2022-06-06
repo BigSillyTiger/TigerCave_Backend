@@ -1,12 +1,5 @@
 const Services = require("../services/roarsServices");
 const { v4: uuidv4 } = require("uuid");
-
-const testAPI = (req, res) => {
-    console.log("=> test api: ", req.body);
-    console.log("=> test files: ", req.files);
-    res.status(200).json({ roar_test: true });
-};
-
 /* 
     add a new roar
  */
@@ -114,5 +107,4 @@ module.exports = {
     archiveRoar,
     getRoars,
     deleteRoar,
-    testAPI,
 };
