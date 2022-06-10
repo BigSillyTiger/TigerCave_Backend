@@ -1,5 +1,6 @@
 const Services = require("../services/roarsServices");
 const { v4: uuidv4 } = require("uuid");
+const { BlankText } = require("../config/presets");
 /* 
     add a new roar
  */
@@ -7,7 +8,8 @@ const addRoar = (req, res) => {
     const option = {
         pairedId: uuidv4(),
         date: Date.now(),
-        content: req.body.data.content,
+        content:
+            req.body.data.content === "" ? BlankText : req.body.data.content,
         archive: false,
         pics: req.body.data.pics,
     };

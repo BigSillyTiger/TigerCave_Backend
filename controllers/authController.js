@@ -4,9 +4,10 @@ const authServices = require("../services/authServices");
 const logs = require("../config/logs");
 const { LOGIN_COOKIES } = require("../config/presets");
 
-const login = (req, res) => {
+const login = async (req, res) => {
+    logs.infoLog("receive admin login req");
     const username = req.body.username;
-    authServices
+    await authServices
         .findUser(username)
         .then((user) => {
             if (!user) {
@@ -44,8 +45,12 @@ const login = (req, res) => {
 };
 
 const logout = (req, res) => {
-    res.clearCookie("login");
-    res.status(200).json({ note: "successfully logout" });
+    try {
+        res.clearCookie("login");
+        res.status(200).json({ note: "successfully logout" });
+    } catch (error) {
+        res.status(400).json({ error: "logout error" });
+    }
 };
 
 module.exports = {

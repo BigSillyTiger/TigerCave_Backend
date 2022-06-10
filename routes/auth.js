@@ -1,24 +1,19 @@
 const router = require("express").Router();
 const utils = require("../utils");
-const { authMW } = require("../middleware").auth;
+const { authMW } = require("../middleware/auth");
 const { User } = require("../database/models/user");
 const homeController = require("../controllers/homepage");
 const authController = require("../controllers/authController");
 const logs = require("../config/logs");
 
-router.post("/adminlogin", (req, res, next) => {
-    logs.infoLog("receive admin login req");
-    authController.login(req, res);
-});
+router.post("/adminlogin", authController.login);
 
 router.get("/checkAuth", authMW, (req, res, next) => {
     //res.send(controller.protectedRouter(true))
     res.status(200).json({ success: true });
 });
 
-router.get("/adminlogout", (req, res, next) => {
-    authController.logout(req, res);
-});
+router.get("/adminlogout", authController.logout);
 
 router.post("/api/login", (req, res, next) => {
     console.log("---> ", req.body);
