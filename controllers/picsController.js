@@ -2,7 +2,7 @@ const picsServices = require("../services/picsServices");
 const log = require("../config/logs");
 
 const uploadImg = async (req, res) => {
-    console.log("======> server upload img uuid: ", req.params.uuid);
+    console.log("======> server upload img uuid: ", req.params);
     if (req.file === undefined) {
         return res.status(400).json({ error: "a file must be selected" });
     }
@@ -16,7 +16,28 @@ const uploadImg = async (req, res) => {
     }
 };
 
+const findRoarPics = async (req, res) => {
+    try {
+        const uuid = req.params.uuid;
+        picsServices
+            .findFile({ metadata: { uuid } })
+            .then((result) => result.toArray())
+            .then((result) => {
+                const pics = result.map((item) => item.filename);
+                return res
+                    .status(200)
+                    .json({ uuid, pics: JSON.stringify(pics) });
+            })
+            .catch((err) => {
+                return res.status(400).json({ error: "findRoarPics err" });
+            });
+    } catch (error) {
+        return res.status(400).json({ error: "findRoarPics err" });
+    }
+};
+
 const retrieveImg = async (req, res) => {
+    console.log("====> retrieveImg params: ", req.params);
     try {
         //picsServices.uploadImgStreamer(req.params.filename).pipe(res);
         const stream = await picsServices.uploadImgStreamer(
@@ -45,9 +66,7 @@ const deleteImg = async (req, res) => {
             .findFile({ filename: name })
             .then((result) => {
                 result.forEach((doc) => {
-                    console.log("=>>> dound: ", doc);
                     picsServices.deleteUploadedImg(doc._id);
-                    console.log("=> FINISHED delete");
                 });
                 res.status(200).json({ msg: "deleted img success" });
             })
@@ -107,4 +126,5 @@ module.exports = {
     deleteImg,
     clearULImgs,
     deleteTestAll,
+    findRoarPics,
 };

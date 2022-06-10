@@ -5,8 +5,6 @@ const getRoars = async (option) => {
 };
 
 const addRoar = async (content) => {
-    //const newRoar = new Roar({ ...content });
-    //return newRoar.save();
     return await Roar.create({ ...content });
 };
 

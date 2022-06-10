@@ -1,12 +1,14 @@
-const Services = require("../services/roarsServices");
-const { v4: uuidv4 } = require("uuid");
+const roarsServices = require("../services/roarsServices");
+const picsServices = require("../services/picsServices");
+
 const { BlankText } = require("../config/presets");
+const { post } = require("../routes/pic");
 /* 
     add a new roar
  */
 const addRoar = (req, res) => {
     const option = {
-        pairedId: uuidv4(),
+        pairedId: req.body.data.uuid,
         date: Date.now(),
         content:
             req.body.data.content === "" ? BlankText : req.body.data.content,
@@ -16,7 +18,8 @@ const addRoar = (req, res) => {
 
     console.log("==> be add new roar: ", option);
 
-    Services.addRoar(option)
+    roarsServices
+        .addRoar(option)
         .then((result) => {
             //console.log("--> controller save new post: ", post);
             res.status(200).json({ roar_save: true });
@@ -37,7 +40,8 @@ const archiveRoar = (req, res) => {
         archive: req.body.data.archiveFlag,
     };
 
-    Services.updateRoar(roarID, option)
+    roarsServices
+        .updateRoar(roarID, option)
         .then((result) => {
             //console.log("--> controller save new post: ", post);
             res.status(200).json({ archived: true });
@@ -66,35 +70,43 @@ const getRoars = (req, res, config) => {
             option.archive = false;
             break;
     }
-    Services.getRoars(option)
-        .then((post) => {
-            if (!post) {
-                res.status(401).json({
+    try {
+        roarsServices
+            .getRoars(option)
+            .then((posts) => {
+                if (!posts) {
+                    res.status(401).json({
+                        success: true,
+                        content_num: 0,
+                        msg: "Could not find content",
+                    });
+                }
+                return posts;
+            })
+            .then((result) => {
+                return res.status(200).json({
+                    success: true,
+                    content_num: result.length,
+                    content: JSON.stringify(result),
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                return res.status(401).json({
                     success: true,
                     content_num: 0,
                     msg: "Could not find content",
                 });
-            }
-            //console.log("------> server post: ", post);
-            res.status(200).json({
-                success: true,
-                content_num: post.length,
-                content: JSON.stringify(post),
             });
-        })
-        .catch((err) => {
-            logs.errLog(err);
-            res.status(401).json({
-                success: true,
-                content_num: 0,
-                msg: "Could not find content",
-            });
-        });
+    } catch (error) {
+        return res.status(400).json({ error: "error occurs" });
+    }
 };
 
 const deleteRoar = (req, res) => {
     const id = req.params["id"];
-    Services.deleteRoar(id)
+    roarsServices
+        .deleteRoar(id)
         .then((result) => {
             console.log("-> succeed: ", result);
             res.status(200).json({ result: "delete successed" });

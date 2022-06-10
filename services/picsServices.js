@@ -1,3 +1,4 @@
+const { GridFsStorage } = require("multer-gridfs-storage");
 const gridfsBucket = require("../database/gridfsBucket");
 
 const bucketName = "roarpic";
@@ -18,8 +19,26 @@ const deleteUploadedImg = (id) => {
     });
 };
 
+const findRoarPics = (uuid) => {
+    try {
+        picsServices
+            .findFile({ metadata: { uuid } })
+            .then((result) => result.toArray())
+            .then((result) => {
+                const pics = result.map((item) => item.filename);
+                return pics;
+            })
+            .catch((err) => {
+                return [];
+            });
+    } catch (error) {
+        return [];
+    }
+};
+
 module.exports = {
     uploadImgStreamer,
     deleteUploadedImg,
     findFile,
+    findRoarPics,
 };
