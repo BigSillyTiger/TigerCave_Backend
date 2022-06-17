@@ -1,5 +1,6 @@
 const picsServices = require("../services/picsServices");
 const log = require("../config/logs");
+const path = require("path");
 
 const uploadImg = async (req, res) => {
     console.log("======> server upload img uuid: ", req.params);
@@ -37,7 +38,6 @@ const findRoarPics = async (req, res) => {
 };
 
 const retrieveImg = async (req, res) => {
-    console.log("====> retrieveImg params: ", req.params);
     try {
         //picsServices.uploadImgStreamer(req.params.filename).pipe(res);
         const stream = await picsServices.uploadImgStreamer(
@@ -120,6 +120,21 @@ const deleteTestAll = async (req, res) => {
     }
 };
 
+const heroSlideImgs = (req, res) => {
+    try {
+        res.status(200).json({
+            heros: [
+                "http://localhost:8000/images/slides/slide_1.jpg",
+                "http://localhost:8000/images/slides/slide_2.jpg",
+                "http://localhost:8000/images/slides/slide_3.jpg",
+                "http://localhost:8000/images/slides/slide_4.jpg",
+                "http://localhost:8000/images/slides/slide_5.jpg",
+                "http://localhost:8000/images/slides/slide_6.jpg",
+            ],
+        });
+    } catch (error) {}
+};
+
 module.exports = {
     uploadImg,
     retrieveImg,
@@ -127,4 +142,5 @@ module.exports = {
     clearULImgs,
     deleteTestAll,
     findRoarPics,
+    heroSlideImgs,
 };

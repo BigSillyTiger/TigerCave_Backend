@@ -4,6 +4,7 @@ const roarsController = require("../controllers/roarsController");
 
 const API_REQ_ROAR = "/roars";
 const API_REQ_ROAR_ADMIN = "/admin/roars";
+const API_REQ_ROAR_WITH_PICS = "/roars/withpics";
 
 /* add a new roar */
 router.post(API_REQ_ROAR, [authMW], (req, res) => {
@@ -28,6 +29,10 @@ router.get(API_REQ_ROAR_ADMIN, (req, res) => {
 /* delete a roar */
 router.delete(`${API_REQ_ROAR}/:id`, [authMW], (req, res) => {
     roarsController.deleteRoar(req, res);
+});
+
+router.get(API_REQ_ROAR_WITH_PICS, (req, res) => {
+    roarsController.getRoars(req, res, "NormalWithPic");
 });
 
 module.exports = router;

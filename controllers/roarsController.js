@@ -56,7 +56,7 @@ const archiveRoar = (req, res) => {
     get roars archived / non archived
 */
 const getRoars = (req, res, config) => {
-    const option = {
+    let option = {
         archive: false,
     };
     switch (config) {
@@ -65,6 +65,10 @@ const getRoars = (req, res, config) => {
             break;
         case "Normal":
             option.archive = false;
+            break;
+        case "NormalWithPic":
+            option.archive = false;
+            option.pics = { $elemMatch: { $ne: null } };
             break;
         default:
             option.archive = false;
@@ -116,9 +120,15 @@ const deleteRoar = (req, res) => {
         });
 };
 
+const roarsWithPics = (req, res) => {
+    try {
+    } catch (error) {}
+};
+
 module.exports = {
     addRoar,
     archiveRoar,
     getRoars,
     deleteRoar,
+    roarsWithPics,
 };
