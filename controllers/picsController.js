@@ -3,14 +3,22 @@ const log = require("../config/logs");
 const path = require("path");
 
 const uploadImg = async (req, res) => {
-    console.log("======> server upload img uuid: ", req.params);
-    if (req.file === undefined) {
+    //console.log("======> server upload img uuid: ", req.params);
+    //console.log("======> server upload img files: ", req.files);
+    //if (req.file === undefined) { // single
+    if (req.files === undefined) {
         return res.status(400).json({ error: "a file must be selected" });
     }
     try {
-        const imgURL = `http://localhost:8000/api/retrieveimg/${req.file.filename}`;
-
-        return res.status(200).json({ title: req.file.filename, url: imgURL });
+        //const imgURL = `http://localhost:8000/api/retrieveimg/${req.file.filename}`;
+        //return res.status(200).json({ title: req.file.filename, url: imgURL });
+        const imgURLs = req.files.map((item) => {
+            return {
+                title: item.filename,
+                url: `http://localhost:8000/api/retrieveimg/${item.filename}`,
+            };
+        });
+        return res.status(200).json({ imgURLs });
     } catch (error) {
         console.log("=> error on upload img: ", error);
         return res.status(400).json({ error: "upload img err" });
@@ -83,7 +91,6 @@ const deleteImg = async (req, res) => {
 const clearULImgs = async (req, res) => {
     try {
         const data = req.body.data;
-        console.log("=> be delete upload list: ", data);
         await data.map((item) => {
             picsServices
                 .findFile({ filename: item.title })
@@ -95,14 +102,15 @@ const clearULImgs = async (req, res) => {
                 .catch((error) => {
                     console.log("=> clear ul imgs error: ", error);
                 });
-            return res.status(200).json({ result: "succeed clear ul imgs" });
         });
+        return res.status(200).json({ result: "succeed clear ul imgs" });
     } catch (error) {
+        console.log("===> error on clear ul imgs: ", error);
         return res.status(400).json({ result: "failed clear ul imgs" });
     }
 };
 
-const deleteTestAll = async (req, res) => {
+/* const deleteTestAll = async (req, res) => {
     try {
         await picsServices
             .findFile({})
@@ -118,7 +126,7 @@ const deleteTestAll = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ error: "delete err" });
     }
-};
+}; */
 
 const heroSlideImgs = (req, res) => {
     try {
@@ -140,7 +148,7 @@ module.exports = {
     retrieveImg,
     deleteImg,
     clearULImgs,
-    deleteTestAll,
+    //deleteTestAll,
     findRoarPics,
     heroSlideImgs,
 };

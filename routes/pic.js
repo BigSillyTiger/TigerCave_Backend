@@ -7,7 +7,8 @@ const API_REQ_UPLOAD = "/api/pic";
 
 router.post(
     `${API_REQ_UPLOAD}/:uuid`,
-    [authMW, upload.single("roarImg")],
+    //[authMW, upload.single("roarImg")],
+    [authMW, upload.array("roarImg", 9)],
     picsController.uploadImg
 );
 
@@ -21,7 +22,7 @@ router.delete(
 
 router.post("/api/clear/uploadimgs", [authMW], picsController.clearULImgs);
 
-router.delete("/api/test/deleteall", picsController.deleteTestAll);
+//router.delete("/api/test/deleteall", picsController.deleteTestAll);
 
 router.get("/api/findRoarPics/:uuid", picsController.findRoarPics);
 
