@@ -22,7 +22,7 @@ router.delete(
 
 router.post("/api/clear/uploadimgs", [authMW], picsController.clearULImgs);
 
-//router.delete("/api/test/deleteall", picsController.deleteTestAll);
+router.delete("/api/test/deleteall", picsController.deleteTestAll);
 
 router.get("/api/findRoarPics/:uuid", picsController.findRoarPics);
 
